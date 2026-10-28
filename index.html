@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#e8fbf3">
+  <title>MintVocab — TOEIC Study Club</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#home" aria-label="MintVocab trang chủ">
+        <span class="brand-mascot" aria-hidden="true">M<span>✦</span></span>
+        <span class="brand-copy"><strong>mint<span>vocab</span></strong><small>YOUR DAILY TOEIC QUEST</small></span>
+      </a>
+      <div class="topbar-right">
+        <div class="streak-pill"><span aria-hidden="true">🔥</span><span><strong id="streakDays">0</strong><small>NGÀY HỌC</small></span></div>
+        <div class="xp-pill"><span aria-hidden="true">⭐</span><span><strong id="totalWords">0</strong><small>TỪ VỰNG</small></span></div>
+      </div>
+    </header>
+
+    <section class="welcome-banner" id="home">
+      <div class="welcome-copy">
+        <span class="tiny-label">READY, SET, LEARN!</span>
+        <h1>Mỗi ngày một chút,<br><span>TOEIC giỏi hơn! ✨</span></h1>
+        <p>Thu thập từ vựng, luyện câu ví dụ và chinh phục mục tiêu của bạn.</p>
+        <button class="banner-button" type="button" data-go-tab="add">＋ Thêm từ đầu tiên</button>
+      </div>
+      <div class="welcome-illustration" aria-hidden="true">
+        <div class="sunburst">✦</div><div class="mascot-card"><span class="mascot-face">◕ᴗ◕</span><span class="mascot-caption">YOU<br>CAN DO IT!</span></div>
+        <span class="float-star star-one">★</span><span class="float-star star-two">✦</span><span class="float-star star-three">✧</span>
+      </div>
+    </section>
+
+    <nav class="main-nav" aria-label="Điều hướng chính">
+      <button class="nav-tab active" type="button" data-tab="vault" aria-selected="true"><span class="nav-icon">📚</span><span>Kho từ vựng</span><span class="nav-count" id="vaultCount">0</span></button>
+      <button class="nav-tab" type="button" data-tab="add" aria-selected="false"><span class="nav-icon">✏️</span><span>Thêm từ mới</span></button>
+      <button class="nav-tab" type="button" data-tab="games" aria-selected="false"><span class="nav-icon">🎮</span><span>Trung tâm trò chơi</span></button>
+    </nav>
+
+    <main>
+      <section class="tab-panel active" id="tab-vault" data-panel="vault">
+        <div class="section-title-row">
+          <div><span class="tiny-label mint-label">MY WORD COLLECTION</span><h2>Kho từ vựng <span class="title-spark">✦</span></h2><p class="section-subtitle">Từ của bạn, hành trình của bạn. Cứ đều đặn là sẽ giỏi!</p></div>
+          <div class="vault-total"><strong id="vaultTotal">0</strong><span>từ đã lưu</span></div>
+        </div>
+        <div class="vault-tools">
+          <label class="search-field"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Tìm từ tiếng Anh hoặc nghĩa..." aria-label="Tìm từ vựng"></label>
+          <label class="filter-field"><span>Ngày học</span><select id="dateFilter" aria-label="Lọc theo ngày"><option value="all">Tất cả ngày</option></select></label>
+        </div>
+        <div class="word-grid" id="wordGrid"></div>
+        <div class="empty-state" id="vaultEmpty" hidden><span>🌱</span><h3>Kho từ đang chờ bạn!</h3><p>Thêm từ vựng đầu tiên để bắt đầu hành trình TOEIC nhé.</p><button class="mint-button" type="button" data-go-tab="add">＋ Thêm từ mới</button></div>
+      </section>
+
+      <section class="tab-panel" id="tab-add" data-panel="add" hidden>
+        <div class="section-title-row"><div><span class="tiny-label mint-label">GROW YOUR VOCABULARY</span><h2>Thêm từ mới <span class="title-spark">🌱</span></h2><p class="section-subtitle">Một từ tốt đi kèm ví dụ hay sẽ dễ nhớ hơn.</p></div></div>
+        <div class="form-layout">
+          <aside class="form-tip-card"><div class="tip-emoji">💡</div><h3>Mẹo học nhỏ</h3><p>Thêm từ trong ngữ cảnh thực tế. Hãy tạo ít nhất 3 cặp câu Anh – Việt để luyện dịch câu hiệu quả.</p><div class="tip-mini">✦ Học chủ động<br>✦ Ôn tập thường xuyên<br>✦ Tiến bộ từng ngày</div></aside>
+          <form id="vocabForm" class="form-card">
+            <div class="form-card-heading"><span class="form-icon">✏️</span><div><h3>Thông tin từ vựng</h3><p>Các ô có dấu <b>*</b> là bắt buộc</p></div></div>
+            <div class="form-grid">
+              <div class="field full"><label for="englishWord">Từ tiếng Anh <b>*</b></label><input id="englishWord" required maxlength="100" placeholder="Ví dụ: Submit" autocomplete="off"></div>
+              <div class="field"><label for="wordType">Từ loại <b>*</b></label><select id="wordType" required><option value="">Chọn từ loại</option><option>Danh từ (Noun)</option><option>Động từ (Verb)</option><option>Tính từ (Adjective)</option><option>Trạng từ (Adverb)</option><option>Cụm từ (Phrase)</option><option>Khác (Other)</option></select></div>
+              <div class="field"><label for="pronunciation">Phiên âm</label><input id="pronunciation" maxlength="100" placeholder="/səbˈmɪt/"></div>
+              <div class="field full"><label for="meaning">Nghĩa tiếng Việt <b>*</b></label><input id="meaning" required maxlength="250" placeholder="Ví dụ: nộp, đệ trình"></div>
+              <div class="field full"><label for="studyDate">Ngày học của từ này <b>*</b></label><input id="studyDate" type="date" required></div>
+            </div>
+            <div class="examples-heading"><div><h3>Ví dụ Anh – Việt</h3><p>Thêm bao nhiêu câu tùy thích.</p></div><button id="addExample" class="outline-button" type="button">＋ Thêm câu ví dụ</button></div>
+            <div id="exampleFields" class="example-fields"></div>
+            <p id="formMessage" class="form-message" role="status" aria-live="polite"></p>
+            <button class="mint-button submit-word" type="submit">✨ Thêm vào kho từ</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="tab-panel" id="tab-games" data-panel="games" hidden>
+        <div class="section-title-row"><div><span class="tiny-label mint-label">PLAY · PRACTICE · PROGRESS</span><h2>Trung tâm trò chơi <span class="title-spark">🎯</span></h2><p class="section-subtitle">Chọn ngày học, sau đó chọn thử thách bạn muốn chinh phục.</p></div></div>
+        <div class="game-layout">
+          <section class="game-select-card">
+            <div class="subsection-heading"><span class="heading-emoji">🗓️</span><div><h3>Chọn bài học theo ngày</h3><p>Tick một hoặc nhiều ngày để gom từ luyện tập.</p></div></div>
+            <div class="date-actions"><button id="selectAllDays" class="text-button" type="button">Chọn tất cả</button><button id="clearDays" class="text-button" type="button">Bỏ chọn</button></div>
+            <div id="lessonList" class="lesson-list"></div>
+            <div id="selectedSummary" class="selection-summary">Bạn chưa chọn ngày học.</div>
+          </section>
+          <section class="game-choice-area">
+            <article class="game-choice-card word-game-card">
+              <div class="game-art word-art"><span>ABC</span><b>✏️</b><i>?</i></div>
+              <div class="game-choice-copy"><span class="game-number">CHALLENGE 01</span><h3>Đoán từ tiếng Anh</h3><p>Đọc nghĩa tiếng Việt, tự gõ từ tiếng Anh từ trí nhớ của bạn.</p><div class="game-meta"><span>⌨️ Tự gõ từ</span><span>🔀 Ngẫu nhiên</span></div><button class="game-launch-button purple-launch" id="launchWordGame" type="button">Chơi game 1 <span>→</span></button></div>
+            </article>
+            <article class="game-choice-card sentence-game-card">
+              <div class="game-art sentence-art"><span>文</span><b>💬</b><i>✓</i></div>
+              <div class="game-choice-copy"><span class="game-number">CHALLENGE 02</span><h3>Dịch câu ví dụ</h3><p>Đọc câu tiếng Việt, tự gõ nguyên câu tiếng Anh có trong kho từ.</p><div class="game-meta"><span>📝 Tự gõ cả câu</span><span>🎯 Đúng chính tả</span></div><button class="game-launch-button orange-launch" id="launchSentenceGame" type="button">Chơi game 2 <span>→</span></button></div>
+            </article>
+          </section>
+        </div>
+        <div class="game-note"><span>💚</span><p><strong>Học thật, nhớ thật.</strong> Game 2 chỉ sử dụng các cặp câu Anh – Việt bạn đã lưu. Hãy thêm bản dịch tiếng Việt cho câu ví dụ để luyện tập.</p></div>
+      </section>
+    </main>
+    <footer><span class="footer-brand">mintvocab <b>✦</b></span><span>Học từng từ · Vững từng bước</span><span class="offline-label"><i></i> Lưu trên thiết bị · Offline</span></footer>
+  </div>
+
+  <div id="editModal" class="modal" hidden>
+    <div class="modal-backdrop" data-close-edit="true"></div>
+    <section class="dialog edit-dialog" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+      <button class="dialog-close" id="closeEdit" type="button" aria-label="Đóng">×</button>
+      <span class="tiny-label mint-label">UPDATE YOUR WORD</span><h2 id="editTitle">Sửa câu ví dụ</h2><p class="dialog-subtitle" id="editWordSubtitle"></p>
+      <form id="editForm"><div id="editExampleFields" class="example-fields"></div><button id="addEditExample" class="outline-button" type="button">＋ Thêm câu ví dụ</button><p id="editMessage" class="form-message" role="status"></p><button class="mint-button submit-word" type="submit">✓ Cập nhật</button></form>
+    </section>
+  </div>
+
+  <div id="gameModal" class="modal" hidden>
+    <div class="modal-backdrop" data-close-game="true"></div>
+    <section class="dialog game-dialog" role="dialog" aria-modal="true" aria-labelledby="gameTitle">
+      <button class="dialog-close" id="closeGame" type="button" aria-label="Đóng game">×</button>
+      <div id="gameView">
+        <div class="game-modal-top"><span class="tiny-label mint-label" id="gameEyebrow">VOCAB CHALLENGE</span><span class="score-pill">⭐ <b id="scoreCounter">0</b></span></div>
+        <h2 id="gameTitle">Đoán từ tiếng Anh</h2>
+        <div class="progress-info"><span id="questionCounter">Câu 1/3</span><span id="progressPercent">0%</span></div><div class="progress-track"><div id="progressBar"></div></div>
+        <div class="question-card"><span id="questionLabel">NGHĨA TIẾNG VIỆT</span><p id="questionPrompt"></p><small id="questionHint"></small></div>
+        <form id="answerForm"><label id="answerLabel" for="answerInput">Từ tiếng Anh là gì?</label><input id="answerInput" required autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Tự gõ đáp án của bạn..."><div id="answerFeedback" class="answer-feedback" role="status" aria-live="polite"></div><button id="checkAnswer" class="mint-button submit-word" type="submit">KIỂM TRA ✓</button><button id="nextQuestion" class="mint-button next-button" type="button" hidden>Tiếp tục →</button></form>
+        <p class="game-footnote">Không có gợi ý chữ cái — hãy tin vào trí nhớ của bạn! 💪</p>
+      </div>
+      <div id="resultView" hidden><div class="result-mascot">🏆</div><span class="tiny-label mint-label">CHALLENGE COMPLETE</span><h2>Hoàn thành thử thách!</h2><div class="result-score"><strong id="finalScore">0/0</strong><span id="finalPercent">0%</span></div><p id="resultMessage" class="result-message"></p><div id="reviewList" class="review-list"></div><button id="playAgain" class="mint-button submit-word" type="button">Chơi lại bộ này ↻</button><button id="finishGame" class="outline-button close-result" type="button">Đóng</button></div>
+    </section>
+  </div>
+
+  <div id="deleteModal" class="modal delete-modal" hidden>
+    <div class="modal-backdrop" data-close-delete="true"></div>
+    <section class="dialog delete-dialog" role="dialog" aria-modal="true" aria-labelledby="deleteTitle" aria-describedby="deleteDescription">
+      <div class="delete-modal-icon" aria-hidden="true">🗑️</div>
+      <span class="tiny-label delete-label">ONE QUICK CHECK</span>
+      <h2 id="deleteTitle">Xóa từ vựng này?</h2>
+      <p id="deleteDescription" class="delete-description">Bạn có chắc muốn xóa từ này cùng tất cả câu ví dụ không? Thao tác này không thể hoàn tác.</p>
+      <div class="delete-word-preview" id="deleteWordPreview"></div>
+      <div class="delete-modal-actions">
+        <button id="cancelDelete" class="cancel-delete-button" type="button">Hủy</button>
+        <button id="confirmDelete" class="confirm-delete-button" type="button">Xóa từ này</button>
+      </div>
+    </section>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
