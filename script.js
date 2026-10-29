@@ -262,37 +262,36 @@ function addExampleField(container, example = {}, index = 0) {
 
   head.append(title, remove);
 
-  const englishLabel = el('label', 'field-label', 'Câu tiếng Anh *');
-  const englishInput = document.createElement('input');
-
-  englishInput.type = 'text';
-  englishInput.required = true;
-  englishInput.maxLength = 600;
-  englishInput.placeholder = 'Ví dụ: Please submit your report.';
-  englishInput.value = example.english || '';
-  englishInput.dataset.exampleEnglish = 'true';
-
-  const vietnameseLabel = el(
-    'label',
-    'field-label',
-    'Câu tiếng Việt tương ứng *'
-  );
-
+  const vietnameseLabel = el('label', 'field-label', 'Câu tiếng Việt *');
   const vietnameseInput = document.createElement('input');
 
   vietnameseInput.type = 'text';
   vietnameseInput.required = true;
   vietnameseInput.maxLength = 600;
-  vietnameseInput.placeholder = 'Ví dụ: Vui lòng nộp báo cáo của bạn.';
+  vietnameseInput.placeholder = 'Nhập câu tiếng Việt làm đề bài đố (Ví dụ: Vui lòng nộp báo cáo của bạn.)';
   vietnameseInput.value = example.vietnamese || '';
   vietnameseInput.dataset.exampleVietnamese = 'true';
 
+  const englishLabel = el(
+    'label',
+    'field-label',
+    'Câu tiếng Anh tương ứng *'
+  );
+  const englishInput = document.createElement('input');
+
+  englishInput.type = 'text';
+  englishInput.required = true;
+  englishInput.maxLength = 600;
+  englishInput.placeholder = 'Nhập câu tiếng Anh đáp án chính xác (Ví dụ: Please submit your report.)';
+  englishInput.value = example.english || '';
+  englishInput.dataset.exampleEnglish = 'true';
+
   entry.append(
     head,
-    englishLabel,
-    englishInput,
     vietnameseLabel,
-    vietnameseInput
+    vietnameseInput,
+    englishLabel,
+    englishInput
   );
 
   container.appendChild(entry);
@@ -849,7 +848,6 @@ $('launchSentenceGame').addEventListener('click', () => launchGame('sentence'));
 
 function showQuestion() {
   const question = gameQuestions[gameIndex];
-
   if (!question) {
     showResults();
     return;
