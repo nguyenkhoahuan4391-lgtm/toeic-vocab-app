@@ -179,6 +179,64 @@ function el(tag, className, text) {
   return node;
 }
 
+/* Text-to-Speech: use the browser's built-in speech synthesis, without audio files. */
+function speakEnglish(text) {
+  const phrase = String(text || '').trim();
+  if (!phrase) return;
+
+  if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
+    showToast('Trình duyệt này chưa hỗ trợ phát âm tự động.', true);
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(phrase);
+  utterance.lang = 'en-US';
+  utterance.rate = 0.88;
+  utterance.pitch = 1;
+
+  const voices = window.speechSynthesis.getVoices();
+  const americanVoice = voices.find(voice => /^en-US$/i.test(voice.lang)) ||
+    voices.find(voice => /^en[-_]US/i.test(voice.lang)) ||
+    voices.find(voice => /^en/i.test(voice.lang));
+  if (americanVoice) utterance.voice = americanVoice;
+
+  utterance.onerror = () => {
+    showToast('Không thể phát âm trên thiết bị này. Hãy kiểm tra giọng đọc của trình duyệt.', true);
+  };
+  window.speechSynthesis.speak(utterance);
+}
+
+function createSpeakButton(text, label = 'Nghe phát âm tiếng Anh') {
+  const button = el('button', 'speak-button', '🔊');
+  button.type = 'button';
+  button.setAttribute('aria-label', label);
+  button.setAttribute('title', label);
+  button.style.cssText = [
+    'display:inline-flex', 'align-items:center', 'justify-content:center',
+    'flex:0 0 auto', 'width:34px', 'height:34px', 'padding:0',
+    'margin-left:7px', 'border:1px solid #ccefe0', 'border-radius:50%',
+    'background:#effbf5', 'color:#23845b', 'font-size:16px',
+    'line-height:1', 'cursor:pointer',
+    'transition:transform 160ms ease, background 160ms ease, box-shadow 160ms ease',
+    'vertical-align:middle'
+  ].join(';');
+  button.addEventListener('mouseenter', () => {
+    button.style.background = '#d9f7e8';
+    button.style.boxShadow = '0 3px 8px rgba(35,132,91,.15)';
+    button.style.transform = 'translateY(-1px) scale(1.04)';
+  });
+  button.addEventListener('mouseleave', () => {
+    button.style.background = '#effbf5';
+    button.style.boxShadow = 'none';
+    button.style.transform = 'none';
+  });
+  button.addEventListener('pointerdown', () => { button.style.transform = 'scale(.94)'; });
+  button.addEventListener('pointerup', () => { button.style.transform = 'scale(1.04)'; });
+  button.addEventListener('click', () => speakEnglish(text));
+  return button;
+}
+
 function formatDate(date) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date || '')) {
     return 'Ngày chưa xác định';
@@ -349,8 +407,14 @@ function renderWordCard(word) {
   const card = el('article', 'word-card');
   const top = el('div', 'word-card-top');
 
+  const wordTitle = el('div', 'word-title-with-speech');
+  wordTitle.style.cssText = 'display:flex;align-items:center;min-width:0;flex-wrap:wrap;';
+  const englishTitle = el('h3', '', word.english);
+  englishTitle.style.margin = '0';
+  wordTitle.append(englishTitle, createSpeakButton(word.english, `Nghe từ ${word.english}`));
+
   top.append(
-    el('h3', '', word.english),
+    wordTitle,
     el('span', 'type-pill', word.type || 'Khác')
   );
 
@@ -848,6 +912,7 @@ $('launchSentenceGame').addEventListener('click', () => launchGame('sentence'));
 
 function showQuestion() {
   const question = gameQuestions[gameIndex];
+
   if (!question) {
     showResults();
     return;
@@ -922,6 +987,26 @@ $('answerForm').addEventListener('submit', event => {
   feedback.textContent = correct
     ? 'Chính xác! 🎉 Bạn đã nhớ đúng đáp án.'
     : `Chưa đúng rồi! ❌\nĐáp án đúng: ${question.answer}`;
+
+  if (activeGameType === 'word' && correct) {
+    const answerAudioRow = el('div', 'answer-speech-row');
+    answerAudioRow.style.cssText = 'display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px;';
+    answerAudioRow.append(
+      el('span', '', `Đáp án: ${question.answer}`),
+      createSpeakButton(question.answer, `Nghe từ ${question.answer}`)
+    );
+    feedback.appendChild(answerAudioRow);
+  }
+
+  if (activeGameType === 'sentence') {
+    const sentenceAudioRow = el('div', 'answer-speech-row');
+    sentenceAudioRow.style.cssText = 'display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px;';
+    sentenceAudioRow.append(
+      el('span', '', 'Nghe câu tiếng Anh gốc:'),
+      createSpeakButton(question.answer, 'Nghe toàn bộ câu tiếng Anh')
+    );
+    feedback.appendChild(sentenceAudioRow);
+  }
 
   if (correct) correctCount++;
 
@@ -1016,6 +1101,10 @@ function closeGame() {
 
   if ($('editModal').hidden && $('deleteModal').hidden) {
     document.body.style.overflow = '';
+  }
+
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
   }
 }
 
