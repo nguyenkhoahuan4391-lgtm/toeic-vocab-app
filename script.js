@@ -440,12 +440,12 @@ function renderWordCard(word) {
 
     const preview = el('div', 'example-preview');
 
-    preview.appendChild(el('p', 'example-en', example.english));
     preview.appendChild(el(
       'p',
       example.vietnamese ? 'example-vi' : 'example-vi missing-translation',
       example.vietnamese || 'Chưa có bản dịch tiếng Việt'
     ));
+    preview.appendChild(el('p', 'example-en', example.english));
 
     previews.appendChild(preview);
   });
@@ -489,19 +489,21 @@ function renderVault() {
   const search = $('searchInput').value.trim().toLocaleLowerCase();
   const dateFilter = $('dateFilter').value;
 
-  const filtered = words.filter(word => {
-    const matchesDate = dateFilter === 'all' || word.studyDate === dateFilter;
+  const filtered = [...words]
+    .filter(word => {
+      const matchesDate =
+        dateFilter === 'all' || word.studyDate === dateFilter;
 
-    const matchesSearch = !search ||
-      word.english.toLocaleLowerCase().includes(search) ||
-      word.meaning.toLocaleLowerCase().includes(search) ||
-      word.examples.some(example =>
-        example.english.toLocaleLowerCase().includes(search) ||
-        example.vietnamese.toLocaleLowerCase().includes(search)
-      );
+      // Chỉ tìm từ tiếng Anh bắt đầu bằng từ khóa đã nhập.
+      // Ví dụ: "Ap" khớp "Apple", không khớp "Admire".
+      const matchesSearch = !search ||
+        word.english.toLocaleLowerCase().startsWith(search);
 
-    return matchesDate && matchesSearch;
-  });
+      return matchesDate && matchesSearch;
+    })
+    .sort((a, b) =>
+      a.english.localeCompare(b.english, 'en', { sensitivity: 'base' })
+    );
 
   grid.replaceChildren();
   filtered.forEach(word => grid.appendChild(renderWordCard(word)));

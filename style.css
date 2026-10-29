@@ -2923,3 +2923,121 @@ footer {
     animation: none !important;
   }
 }
+
+/* Mint Vocab update: touch behavior, mobile mascot stars, and safe form sizing */
+html,
+body,
+button,
+input,
+select,
+textarea,
+[role="button"] {
+  touch-action: manipulation;
+}
+
+input,
+select,
+textarea {
+  min-width: 0;
+  max-width: 100%;
+  font-size: 16px !important;
+}
+
+button,
+[role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+input[type="date"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="time"],
+#studyDate {
+  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  font-size: 16px !important;
+}
+
+input[type="date"]::-webkit-date-and-time-value {
+  text-align: left;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  margin: 0;
+  padding: 0;
+}
+
+.welcome-illustration {
+  position: relative;
+  isolation: isolate;
+}
+
+.welcome-illustration .mascot-card {
+  position: relative;
+  z-index: 2;
+}
+
+.welcome-illustration .sunburst,
+.welcome-illustration .float-star {
+  z-index: 3;
+  pointer-events: none;
+}
+
+.mascot-caption {
+  width: 100%;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .welcome-illustration {
+    overflow: visible;
+  }
+
+  .welcome-illustration .mascot-card {
+    z-index: 2;
+  }
+
+  .welcome-illustration .sunburst {
+    top: 7%;
+    left: 4%;
+    z-index: 3;
+  }
+
+  .welcome-illustration .star-one {
+    top: 6%;
+    right: 3%;
+    z-index: 3;
+  }
+
+  .welcome-illustration .star-two {
+    right: 2%;
+    bottom: 7%;
+    z-index: 3;
+  }
+
+  .welcome-illustration .star-three {
+    left: 2%;
+    bottom: 8%;
+    z-index: 3;
+  }
+
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="month"],
+  input[type="time"],
+  #studyDate {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+}
